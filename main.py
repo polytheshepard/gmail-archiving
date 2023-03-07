@@ -30,10 +30,8 @@ def gmail_authenticate():
             creds.refresh(Request())
         else:
             #searches for client secret file. By default contains client_secret_
-            # TO DO: Update the regex string matching 
-            # re.search(/[client_secret_][a-zA-Z0-9]*[.appsgoogleusercontent.com]/g
-            flow = InstalledAppFlow.from_client_secrets_file('client_secret_REGEX.apps.googleusercontent.com.json', SCOPES)
-            
+            # UPDATED: Search for client secret file as long as it's in the folder
+            flow = InstalledAppFlow.re.search('/client_secret+_[0-9]+-[a-z0-9]+.apps.googleusercontent.com.json+/g', SCOPES)
             creds = flow.run_local_server(port=0)
 
         #credentials for the next run
@@ -72,6 +70,6 @@ def delete_messages(service, query):
 if __name__ == "__main__":
     import sys
     service = gmail_authenticate()
-    delete_messages(service, "from: jobmail@s.seek.com.au older_than:2y")
+    delete_messages(service, "from: admin@probonoaustralia.com.au older_than:1y")
 
 print("Deleted all messages!")
