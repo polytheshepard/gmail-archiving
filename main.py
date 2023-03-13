@@ -1,6 +1,7 @@
 import os
 import pickle
 import re
+import time
 # Gmail API utils
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -8,6 +9,7 @@ from google.auth.transport.requests import Request
 # for encoding/decoding messages in base64
 from base64 import urlsafe_b64decode, urlsafe_b64encode
 # for dealing with attachement MIME types
+from apiclient import errors
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
@@ -17,6 +19,8 @@ from mimetypes import guess_type as guess_mime_type
 
 # Request all access (permission to read/send/receive emails, manage the inbox, and more)
 SCOPES = ['https://mail.google.com/']
+# TO UPDATE: set QUERY constant to any parameters with QUERY in functions
+# QUERY = 'from: admin@probonoaustralia.com.au older_than:2y'
 our_email = 'test@gmail.com'
 
 def gmail_authenticate():
@@ -30,9 +34,12 @@ def gmail_authenticate():
             creds.refresh(Request())
         else:
             #searches for client secret file. By default contains client_secret_
-            # UPDATED: Search for client secret file as long as it's in the folder
-            flow = InstalledAppFlow.re.search('/client_secret+_[0-9]+-[a-z0-9]+.apps.googleusercontent.com.json+/g', SCOPES)
-            creds = flow.run_local_server(port=0)
+            # UPDATED: Search for client secret file as long as it's in the client_secret folder
+            path_file = "C:\\Users\\katie\\OneDrive\\Documents\\Projects\\gmail-archiving\\client_secret\\"
+            for filename in os.listdir(path_file):
+                if re.match("client_secret+_[0-9]+-[a-z0-9]+.apps.googleusercontent.com.json+", filename):
+                    flow = InstalledAppFlow.from_client_secrets_file(path_file+filename, SCOPES)
+                    creds = flow.run_local_server(port=0)
 
         #credentials for the next run
         with open("token.pickle", "wb") as token:
@@ -70,6 +77,6 @@ def delete_messages(service, query):
 if __name__ == "__main__":
     import sys
     service = gmail_authenticate()
-    delete_messages(service, "from: admin@probonoaustralia.com.au older_than:1y")
+    delete_messages(service, "from: noreply@medium.com older_than:3y")
 
 print("Deleted all messages!")
