@@ -20,8 +20,8 @@ from mimetypes import guess_type as guess_mime_type
 # Request all access (permission to read/send/receive emails, manage the inbox, and more)
 SCOPES = ['https://mail.google.com/']
 # TO UPDATE: set QUERY constant to any parameters with QUERY in functions
-# QUERY = 'from: admin@probonoaustralia.com.au older_than:2y'
-our_email = 'katies.truong@gmail.com'
+our_email = 'test@gmail.com'
+QUERY = ''
 
 def gmail_authenticate():
     creds = None
@@ -53,13 +53,15 @@ service = gmail_authenticate()
 def search_messages(service, query):
     result = service.users().messages().list(userId='me',q=query).execute()
     messages = [ ]
+ #   print(f"Found {len(result)} emails.")
     if 'messages' in result:
         messages.extend(result['messages'])
     while 'nextPageToken' in result:
         page_token = result['nextPageToken']
         result = service.users().messages().list(userId='me',q=query, pageToken=page_token).execute()
-        if 'messages' in result:
-            messages.extend(result['messages'])
+        messages.extend(result['messages'])
+        if len(messages) > 999:
+            break
     return messages
     
 def delete_messages(service, query):
@@ -76,8 +78,12 @@ def delete_messages(service, query):
     ).execute()
 
 if __name__ == "__main__":
-    import sys
     service = gmail_authenticate()
-    delete_messages(service, "from: noreply@medium.com older_than:3y")
+    i = 0
 
-print("Deleted all messages!")
+    while i < 600:
+        delete_messages(service, "from: noreply@ozbargain.com.au older_than:1y")
+    else:
+        print("None")
+    i = i + 1
+    time.sleep(5)
