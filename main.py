@@ -34,9 +34,7 @@ def gmail_authenticate():
             creds.refresh(Request())
         else:
             #searches for client secret file. By default contains client_secret_
-            # UPDATED: Search for client secret file as long as it's in the folder
-            # TO DO: further test if re.search() returns a string properly
-            path_file = "C:\\Users\\katie\\OneDrive\\Documents\\Projects\\gmail-archiving\\client_secret\\"
+            path_file = {PATH_TO_CLIENT_SECRET}
             for filename in os.listdir(path_file):
                 if re.match("client_secret+_[0-9]+-[a-z0-9]+.apps.googleusercontent.com.json+", filename):
                     flow = InstalledAppFlow.from_client_secrets_file(path_file+filename, SCOPES)
@@ -82,7 +80,7 @@ if __name__ == "__main__":
     i = 0
 
     while i < 600:
-        delete_messages(service, "from: noreply@ozbargain.com.au older_than:1y")
+        delete_messages(service, {from_email}) # e.g. "from: noreply@emaildomain.com.au older_than:1y"
     else:
         print("None")
     i = i + 1
